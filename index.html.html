@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Рабочий график</title>
+<style>
+  body{font-family:"Montserrat",sans-serif;margin:0;padding:20px;background:#f0f0f0;color:#222;min-height:100vh;}
+  h1{font-size:28px;margin:0 0 8px 0;text-align:center}
+  .sub{text-align:center;margin:0 0 20px 0;color:#444;font-size:16px}
+  .controls{display:flex;justify-content:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .btn{
+    padding:10px 18px;
+    border-radius:30px;
+    border:none;
+    background: #d9d9d9;
+    color:#fff;cursor:pointer;
+    font-size:15px;font-weight:600;
+    transition:all 0.25s;
+  }
+  
+  
+  .calendar{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+  .month{
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+    width:100%;
+    max-width:860px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.1);
+    animation:fadein .3s ease;
+    box-sizing:border-box;
+    overflow:hidden;
+    position:relative;
+  }
+  @keyframes fadein{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+  .month-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    margin-bottom:10px;
+    position:relative;
+  }
+  .month-header h2{margin:0;font-size:22px;color:#2b2b2b;text-transform:capitalize;}
+  .month-header h3{margin:4px 0 0 0;font-size:16px;color:#555;font-weight:500;}
+  .arrow{
+    background: #d9d9d9;
+    color:white;
+    border-radius:50%;
+    width:32px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+    transition:all .25s;
+  }
+  .arrow:hover{background: #d9d9d9;transform:scale(1.1)}
+  .weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    width:100%;
+    margin:10px 0;
+    box-sizing:border-box;
+    text-align:center;
+  }
+  .weekdays div{
+    font-size:13px;
+    color:#555;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:24px;
+  }
+  .grid.month, .grid.week{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  .cell{
+    min-height:110px;
+    border-radius:12px;
+    padding:8px;
+    background:#fff;
+    position:relative;
+    font-size:14px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    text-align:center;
+    font-weight:500;
+    line-height:1.3;
+    box-sizing:border-box;
+  }
+  .date{font-weight:800;font-size:20px;margin-top:10px;margin-bottom:6px;flex-shrink:0;}
+  .desc{margin-top:10px;font-size:14px}
+  
+  
+  
+  
+  
+
+
+
+
+.today {
+  border: 3px solid #ef5350 !important; /* яркий красный */
+  box-shadow: 0 0 14px 3px rgba(239, 83, 80, 0.6);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 10px rgba(239, 83, 80, 0.6); }
+  50%  { box-shadow: 0 0 26px rgba(239, 83, 80, 0.9); }
+  100% { box-shadow: 0 0 10px rgba(239, 83, 80, 0.6); }
+}
+
+.today-label {
+  background: #ef5350; /* яркий красный */
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+
+
+
+
+  .legend{margin-top:25px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+  .item{display:flex;gap:6px;align-items:center;font-size:14px}
+  .swatch{width:16px;height:16px;border-radius:4px}
+  .footer{margin-top:20px;font-size:13px;color:#333;text-align:center}
+  @media(max-width:800px){
+    .month{width:100%}
+    .calendar{flex-direction:column;align-items:center}
+    .weekdays,.grid.week,.grid.month{grid-template-columns:repeat(7,1fr)}
+  }
+
+.today .date { margin-top: 5px !important; }
+.today .desc { margin-top: 6px !important; }
+
+
+button {
+  background: #d9d9d9;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: #d9d9d9;
+}
+
+
+button {
+  background: #c0c0c0;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #8c8c8c;
+  color: #fff;
+}
+
+button.active {
+  background: #666666;
+  color: #fff;
+}
+
+/* Общий стиль для кнопок Неделя / Месяц / Полгода */
+
+
+
+
+
+
+/* Стиль для стрелок */
+.arrow-btn {
+  background: #d9d9d9;
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background 0.2s ease;
+}
+
+.arrow-btn:hover {
+  background: #d9d9d9;
+  color: #fff;
+}
+
+
+
+/* Серый стиль для кнопок Неделя / Месяц / Полгода */
+
+
+
+
+
+
+/* Стрелки в сером градиенте */
+.arrow-btn {
+  background: #d9d9d9;
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background 0.2s ease;
+}
+
+.arrow-btn:hover {
+  background: #d9d9d9;
+  color: #fff;
+}
+
+
+
+
+
+
+
+.btn, .toggle-btn, .view-toggle button {
+  background: #d9d9d9;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn:hover, .toggle-btn:hover, .view-toggle button:hover {
+  background: #a6a6a6;
+  color: #000;
+}
+
+.btn.active, .toggle-btn.active, .view-toggle button.active {
+  background: #666666;
+  color: #fff;
+}
+
+.arrow-btn {
+  background: #d9d9d9;
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  padding: 10px 15px;
+  margin: 0 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.arrow-btn:hover {
+  background: #a6a6a6;
+  color: #000;
+}
+
+.arrow-btn:active {
+  background: #666666;
+  color: #fff;
+}
+
+.day-off-full {
+  background: #bfbfbf;
+  color: #000;
+}
+.day-off {
+  background: #e74c3c;
+  color: #fff;
+}
+
+
+
+
+
+
+
+
+
+
+td
+
+
+
+
+
+
+
+
+
+
+
+td
+
+/* 📱 Мобильная версия */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+  .sub {
+    font-size: 14px;
+  }
+
+  /* кнопки крупнее */
+  .btn, .arrow-btn, .arrow {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 24px;
+  }
+
+  /* неделя — скроллится горизонтально */
+  .grid.week {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+  }
+  .grid.week .cell {
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+
+  /* месяц и полгода — список (1 день в строке) */
+  .grid.month {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .grid.month .cell {
+    width: 100%;
+    min-height: 80px;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .date {
+    font-size: 16px;
+  }
+  .desc {
+    font-size: 13px;
+  }
+}
+
+
+/* 📱 Телефон: только уменьшаем размеры, сетка 7 колонок как на ПК */
+@media (max-width: 600px) {
+  .cell {
+    min-height: 55px;
+    padding: 2px;
+    font-size: 9px;
+    line-height: 1.1;
+  }
+  .date {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+  .desc {
+    font-size: 9px;
+    margin-top: 2px;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+  .weekdays div { font-size: 9px; }
+  .month-header h2 { font-size: 14px; }
+  .month-header h3 { font-size: 10px; }
+}
+
+
+/* 📱 Автоматическая подгонка ширины на телефонах */
+@media (max-width: 600px) {
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .month, .week, .grid.month, .grid.week, .weekdays {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .grid.month, .grid.week, .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+
+/* 📱 Телефон: 7 строк вместо 7 колонок */
+@media (max-width: 600px) {
+  .grid.month, .grid.week, .weekdays {
+    display: grid;
+    grid-template-columns: 1fr !important; /* одна колонка */
+    grid-template-rows: repeat(7, auto);
+    width: 100%;
+  }
+
+  .cell {
+    min-height: 70px;
+    padding: 6px;
+    font-size: 12px;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .date {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .desc {
+    font-size: 12px;
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+
+  .weekdays {
+    display: none; /* скрываем заголовки дней недели сверху */
+  }
+}
+
+
+/* 📱 Телефон: сетка в 2 колонки */
+@media (max-width: 600px) {
+  .grid.month, .grid.week {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .cell {
+    min-height: 90px;
+    padding: 6px;
+    font-size: 13px;
+  }
+
+  .date {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .desc {
+    font-size: 13px;
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+
+  .weekdays {
+    display: none; /* убираем заголовки */
+  }
+}
+
+
+/* 📱 Телефон: увеличенный текст в ячейках */
+@media (max-width: 600px) {
+  .cell {
+    font-size: 15px;
+  }
+  .date {
+    font-size: 17px;
+  }
+  .desc {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+}
+
+
+
+.cell.green {
+  background: linear-gradient(135deg, #99ff99, #66cc66);
+}
+.cell.blue {
+  background: linear-gradient(135deg, #99ccff, #6699ff);
+}
+.cell.yellow {
+  background: linear-gradient(135deg, #fff799, #ffeb66);
+}
+.cell.purple {
+  background: linear-gradient(135deg, #d599ff, #b366ff);
+}
+.cell.orange {
+  background: linear-gradient(135deg, #ffcc99, #ff9966);
+}
+
+
+</style>
+</head>
+<body>
+<h1>Рабочий график</h1>
+<p class="sub">Выберите режим отображения</p>
+<div class="controls">
+<button class="btn active" onclick="setView('week',event)">Неделя</button>
+<button class="btn" onclick="setView('month',event)">Месяц</button>
+<button class="btn" onclick="setView('halfyear',event)">Полгода</button>
+</div>
+<div class="calendar" id="calendar"></div>
+
+
+<script>
+const scheduleWeek1 = {
+  1:{cls:"fulloff",text:"полный выходной"},
+  2:{cls:"work",text:"10:00-14:00"},
+  3:{cls:"remote",text:"17:00-20:00"},
+  4:{cls:"work",text:"10:00-14:00"},
+  5:{cls:"off",text:"выходной"},
+  6:{cls:"remote",text:"14:00-20:00"},
+  0:{cls:"fulloff",text:"полный выходной"}
+};
+const scheduleWeek2 = {
+  1:{cls:"off",text:"выходной"},
+  2:{cls:"work",text:"10:00-20:00"},
+  3:{cls:"remote",text:"17:00-20:00"},
+  4:{cls:"fulloff",text:"полный выходной"},
+  5:{cls:"off",text:"выходной"},
+  6:{cls:"remote",text:"14:00-20:00"},
+  0:{cls:"fulloff",text:"полный выходной"}
+};
+
+const start=new Date(2025,8,1);   // 1 сентября 2025
+const end=new Date(2025,11,31);  // 31 декабря 2025
+const today=new Date();
+
+let currentView="week";
+let currentDate=new Date(today);
+
+function clampDate(date){
+  if(date<start) return new Date(start);
+  if(date>end) return new Date(end);
+  return date;
+}
+
+function getSchedule(date){
+  let diff=Math.floor((date-start)/(1000*60*60*24*7));
+  let weekIndex=(diff%2+2)%2;
+  let sched=weekIndex===0?scheduleWeek1:scheduleWeek2;
+  return {info:sched[date.getDay()],weekIndex:weekIndex};
+}
+
+function render(view){
+  const c=document.getElementById("calendar");
+  c.innerHTML="";
+  if(view==="week"){renderWeek(c);}
+  else if(view==="month"){renderMonth(c,currentDate.getFullYear(),currentDate.getMonth());}
+  else{renderHalfYear(c);}
+}
+
+function renderWeek(c){
+  let div=document.createElement("div");div.className="month";
+
+  let monday=new Date(currentDate);monday.setDate(currentDate.getDate()-((currentDate.getDay()+6)%7));
+  let sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+
+  let diffWeeks=Math.floor((monday-start)/(1000*60*60*24*7));
+  let weekNumber=diffWeeks+1;
+
+  let header=document.createElement("div");header.className="month-header";
+  let left=document.createElement("div");left.className="arrow";left.textContent="◀";
+  left.onclick=()=>{currentDate.setDate(currentDate.getDate()-7);currentDate=clampDate(currentDate);render("week");};
+  let right=document.createElement("div");right.className="arrow";right.textContent="▶";
+  right.onclick=()=>{currentDate.setDate(currentDate.getDate()+7);currentDate=clampDate(currentDate);render("week");};
+  header.appendChild(left);
+
+  let hblock=document.createElement("div");
+  hblock.style.textAlign="center";
+  let h2=document.createElement("h2");h2.textContent="Неделя "+weekNumber;hblock.appendChild(h2);
+  let h3=document.createElement("h3");h3.textContent=monday.toLocaleDateString("ru")+" – "+sunday.toLocaleDateString("ru");hblock.appendChild(h3);
+  header.appendChild(hblock);
+
+  header.appendChild(right);
+  div.appendChild(header);
+
+  let weekdays=document.createElement("div");weekdays.className="weekdays";
+  ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].forEach(d=>{let e=document.createElement("div");e.textContent=d;weekdays.appendChild(e)});
+  div.appendChild(weekdays);
+
+  let grid=document.createElement("div");grid.className="grid week";
+  for(let i=0;i<7;i++){
+    let d=new Date(monday);d.setDate(monday.getDate()+i);
+    let {info}=getSchedule(d);
+    let cell=createCell(d, info, d.toDateString()===today.toDateString());
+    grid.appendChild(cell);
+  }
+  div.appendChild(grid);c.appendChild(div);
+}
+
+function renderMonth(c,year,month){
+  let div=document.createElement("div");div.className="month";
+  let header=document.createElement("div");header.className="month-header";
+  let left=document.createElement("div");left.className="arrow";left.textContent="◀";
+  left.onclick=()=>{currentDate.setMonth(currentDate.getMonth()-1);currentDate=clampDate(currentDate);render("month");};
+  let right=document.createElement("div");right.className="arrow";right.textContent="▶";
+  right.onclick=()=>{currentDate.setMonth(currentDate.getMonth()+1);currentDate=clampDate(currentDate);render("month");};
+  header.appendChild(left);
+
+  let hblock=document.createElement("div");hblock.style.textAlign="center";
+  let h2=document.createElement("h2");
+  let monthName=new Date(year,month).toLocaleString("ru",{month:"long"});
+  h2.textContent=monthName.charAt(0).toUpperCase()+monthName.slice(1);
+  hblock.appendChild(h2);
+  header.appendChild(hblock);
+
+  header.appendChild(right);
+  div.appendChild(header);
+
+  let weekdays=document.createElement("div");weekdays.className="weekdays";
+  ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].forEach(d=>{
+    let e=document.createElement("div");e.textContent=d;weekdays.appendChild(e)
+  });
+  div.appendChild(weekdays);
+
+  let grid=document.createElement("div");grid.className="grid month";
+  let first=new Date(year,month,1);let wd=(first.getDay()+6)%7;
+  for(let i=0;i<wd;i++){grid.appendChild(document.createElement("div"));}
+  let d=new Date(first);
+  while(d.getMonth()===month){
+    let {info}=getSchedule(d);
+    let cell=createCell(d, info, d.toDateString()===today.toDateString());
+    grid.appendChild(cell);
+    d.setDate(d.getDate()+1);
+  }
+  div.appendChild(grid);c.appendChild(div);
+}
+
+function renderMonthNoArrows(c,year,month){
+  let div=document.createElement("div");div.className="month";
+  let header=document.createElement("div");header.className="month-header";
+  let h2=document.createElement("h2");
+  let monthName=new Date(year,month).toLocaleString("ru",{month:"long"});
+  h2.textContent=monthName.charAt(0).toUpperCase()+monthName.slice(1);
+  header.appendChild(h2);
+  div.appendChild(header);
+
+  let weekdays=document.createElement("div");weekdays.className="weekdays";
+  ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].forEach(d=>{
+    let e=document.createElement("div");e.textContent=d;weekdays.appendChild(e)
+  });
+  div.appendChild(weekdays);
+
+  let grid=document.createElement("div");grid.className="grid month";
+  let first=new Date(year,month,1);let wd=(first.getDay()+6)%7;
+  for(let i=0;i<wd;i++){grid.appendChild(document.createElement("div"));}
+  let d=new Date(first);
+  while(d.getMonth()===month){
+    let {info}=getSchedule(d);
+    let cell=createCell(d, info, d.toDateString()===today.toDateString());
+    grid.appendChild(cell);
+    d.setDate(d.getDate()+1);
+  }
+  div.appendChild(grid);c.appendChild(div);
+}
+
+function renderHalfYear(c){
+  // фиксированный диапазон: сентябрь-декабрь 2025, без стрелок
+  for(let m=8;m<=11;m++){renderMonthNoArrows(c,2025,m);}
+}
+
+
+
+
+
+function createCell(date, info, isToday){
+  let cell=document.createElement("div");
+  cell.className="cell "+info.cls;
+  if(isToday) cell.classList.add("today");
+
+  // 1 сентября 2025: 10:00-20:00
+  if(date.getFullYear()===2025 && date.getMonth()===8 && date.getDate()===1){
+    cell.className="cell work";
+    info = {cls:"work", text:"10:00-20:00"};
+  }
+
+  // 3-4 ноября 2025 как полный выходной (серым)
+  if(date.getFullYear()===2025 && date.getMonth()===10 && (date.getDate()===3 || date.getDate()===4)){
+    cell.className="cell fulloff";
+    info = {cls:"fulloff", text:"Полный выходной"};
+  }
+
+  // 15-31 декабря 2025 как "Сессия" (серым)
+  if(date.getFullYear()===2025 && date.getMonth()===11 && date.getDate()>=15 && date.getDate()<=31){
+    cell.className="cell fulloff";
+    info = {cls:"fulloff", text:"Сессия"};
+  }
+
+  if(isToday){
+    let label=document.createElement("div");
+    label.className="today-label";
+    label.textContent="Сегодня";
+    cell.appendChild(label);
+  } else {
+    let spacer=document.createElement("div");
+    spacer.style.height="20px";
+    cell.appendChild(spacer);
+  }
+
+  let dateDiv=document.createElement("div");
+  dateDiv.className="date";
+  dateDiv.textContent=date.getDate();
+  cell.appendChild(dateDiv);
+
+  let desc=document.createElement("div");
+  desc.className="desc";
+  desc.textContent=info.text;
+  cell.appendChild(desc);
+
+  return cell;
+}
+
+
+
+
+
+
+function setView(view,e){
+  currentView = view;
+  document.querySelectorAll(".btn").forEach(b=>b.classList.remove("active"));
+  e.target.classList.add("active");
+
+  // ✅ сброс даты на сегодняшний день
+  currentDate = new Date(today);
+
+  render(view);
+}
+
+
+render("week");
+</script>
+
+<div class="legend">
+  <div class="item"><div class="swatch fulloff"></div><div>Полный выходной</div></div>
+  <div class="item"><div class="swatch off"></div><div>Выходной на работе, весь день в ГАСУ</div></div>
+  <div class="item"><div class="swatch work"></div><div>Работа в офисе</div></div>
+  <div class="item"><div class="swatch remote"></div><div>Работа на удалёнке</div></div>
+</div>
+
+</body>
+<style>
+</style>
+<style>
+</style>
+<style>
+/* 🎨 Градиенты — чуть более заметные */
+.fulloff {
+  background: linear-gradient(135deg, #e7e7e7, #bfbfbf) !important;
+}
+.off {
+  background: linear-gradient(135deg, #ffd6d6, #ff9e9e) !important;
+}
+.work {
+  background: linear-gradient(135deg, #d0f4df, #84d6a9) !important;
+}
+.remote {
+  background: linear-gradient(135deg, #d9e8ff, #95baff) !important;
+}
+.wednesday, td.wednesday {
+  background: linear-gradient(135deg, #e6d8f5, #ad80d9) !important;
+}
+</style>
+</html>
